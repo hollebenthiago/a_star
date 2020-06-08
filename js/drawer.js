@@ -326,7 +326,6 @@ function draw() {
             }
             var current = checking[winner];
             if (current[0] == end[0] && current[1] == end[1]) {
-                console.log(path)
                 path = [end];
                 counter = current;
                 while (grid[counter[0]][counter[1]].camefrom) {
@@ -375,7 +374,6 @@ function draw() {
                         currentNeighbor.g = tempG;
                         checking.push([currentNeighbor.i, currentNeighbor.j])
                         better = true;
-                        // console.log(checking)
                     }
 
                     if (better) {
@@ -391,6 +389,7 @@ function draw() {
         else {
             //no solution found
             console.log('whoopsie')
+            algorithm = !algorithm
         }
     }
     
