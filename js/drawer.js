@@ -1,7 +1,7 @@
 
 // GLOBAL VARIABLES
-const rows      = 25;
-const cols      = 25;
+const rows      = 30;
+const cols      = 30;
 const w         = 700;
 const h         = 700;
 var start       = [0, 0];
@@ -12,6 +12,8 @@ var buttons     = [];
 var checking    = [];
 var checked     = [];
 var path        = [];
+var topology    = 'line';
+var ln          = 1;
 let mousepos;
 let clickpos;
 let algorithm;
@@ -29,6 +31,15 @@ function removefromArray(array, element) {
 function metric(topology, ln, a, b) {
     if (topology == 'line' && ln == 2) {
         return Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
+    }
+    else if (topology == 'line' && ln == 1) {
+        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
+    }
+    else if (topology == 'cylinder' && ln == 1) {
+        return Math.min(Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]), Math.abs((rows - a[0] - b[0]) % rows) + Math.abs((cols - a[1] - b[1] % cols)))
+    }
+    else if (topology == 'line' && ln == 1) {
+        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
     }
 }
 
@@ -49,7 +60,7 @@ function getNeighbors(spot) {
     return result;
 }
 
-function gridSpot(i, j, camefrom, topology) {
+function gridSpot(i, j, camefrom, topology, ln) {
     this.i        = i;
     this.j        = j;
     this.f        = 0;
@@ -57,6 +68,7 @@ function gridSpot(i, j, camefrom, topology) {
     this.h        = 0;
     this.wall     = false;
     this.camefrom = camefrom;
+    this.ln       = ln;
     this.draw = function(m, n) {
         
         let fillStyle;
@@ -100,27 +112,43 @@ function gridSpot(i, j, camefrom, topology) {
                 fillStyle = fill('white');
                 fillStyle;
             }
-            // fillStyle = fill('white');
-            // fillStyle;
         }
         rect(this.i * w / rows, this.j * h / cols, 
              w / rows - 1, h / cols - 1)
         fillStyle = undefined;
     }
-    this.topology = topology;
-    if (this.topology == 'line') {
-        this.neighbors = [];
-        if (i != 0) {
-            this.neighbors.push([i - 1, j])
+    this.topology     = topology;
+    this.addNeighbors = function (topology, i, j) {
+        if (topology == 'line') {
+            this.neighbors = [];
+            if (i != 0) {
+                this.neighbors.push([i - 1, j])
+            }
+            if (i != rows - 1) {
+                this.neighbors.push([i + 1, j])
+            }
+            if (j != 0) {
+                this.neighbors.push([i, j - 1])
+            }
+            if (j != cols - 1) {
+                this.neighbors.push([i, j + 1])
+            }
         }
-        if (i != rows - 1) {
-            this.neighbors.push([i + 1, j])
-        }
-        if (j != 0) {
-            this.neighbors.push([i, j - 1])
-        }
-        if (j != cols - 1) {
-            this.neighbors.push([i, j + 1])
+        else if (topology == 'cylinder') {
+            this.neighbors = [];
+            if (i != 0) {
+                this.neighbors.push([i - 1, j])
+            }
+            if (i == 0) {
+                this.neighbors.push([rows-1, j])
+            }
+            this.neighbors.push([(i + 1) % rows, j])
+            if (j != 0) {
+                this.neighbors.push([i, j - 1])
+            }
+            if (j != cols - 1) {
+                this.neighbors.push([i, j + 1])
+            }
         }
     }
 }
@@ -147,10 +175,7 @@ function setup() {
     var algbtn = createButton('Start/Stop');
     algbtn.parent('buttonsHere')
 
-    //padding between buttons
-    drawbtn.elt.style.marginLeft = '35px';
-    setstartbtn.elt.style.marginLeft = '35px';
-    algbtn.elt.style.marginLeft = '35px';
+    
 
     //adding click event for draw walls button
     drawbtn.mousePressed(() => {
@@ -194,12 +219,6 @@ function setup() {
         }
     })
 
-
-    //adding buttons to list of buttons
-    buttons.push(drawbtn);
-    buttons.push(setstartbtn);
-    buttons.push(algbtn);
-
     //creating canvas
     var canvas = createCanvas(w, h);
     canvas.parent('canvasHere')
@@ -207,10 +226,32 @@ function setup() {
     var rect = document.getElementById('defaultCanvas0').getBoundingClientRect();
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
-            grid[i][j] = new gridSpot(i, j, undefined, 'line');
+            grid[i][j] = new gridSpot(i, j, undefined, topology, ln);
+            grid[i][j].addNeighbors(topology, i, j);
             grid[i][j].draw(i, j);
         }
     }
+
+    //defining topology selector
+    topSel = createSelect();
+    topSel.parent('buttonsHere');
+    topSel.option('line');
+    topSel.option('cylinder')
+    topSel.selected('line');
+    topSel.changed(changeTopology);
+
+    //padding between buttons
+    drawbtn.elt.style.marginLeft = '35px';
+    setstartbtn.elt.style.marginLeft = '35px';
+    algbtn.elt.style.marginLeft = '35px';
+    topSel.elt.style.marginLeft = '35px';
+
+    //adding buttons to list of buttons
+    buttons.push(drawbtn);
+    buttons.push(setstartbtn);
+    buttons.push(algbtn);
+    buttons.push(topSel);
+
     //adding draw walls and set start/end events to canvas
     document.getElementById('defaultCanvas0').addEventListener('mousemove', addWalls)
     document.getElementById('defaultCanvas0').addEventListener('click', setStartEnd)    
@@ -245,6 +286,15 @@ function setStartEnd(event) {
     }
 }
 
+function changeTopology() {
+    topology = topSel.value();
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            grid[i][j].addNeighbors(topology, i, j);
+        }
+    }
+}
+
 //LOOP
 function draw() {
     // code
@@ -276,7 +326,7 @@ function draw() {
             }
             var current = checking[winner];
             if (current[0] == end[0] && current[1] == end[1]) {
-                console.log('uhul')
+                console.log(path)
                 path = [end];
                 counter = current;
                 while (grid[counter[0]][counter[1]].camefrom) {
@@ -297,7 +347,6 @@ function draw() {
                 var currentNeighbor = grid[neighbor[0]][neighbor[1]];
                 if (currentNeighbor.wall) {
                     continue
-                    console.log('wall')
                 }
                 var isChecked       = false;
                 var isChecking      = false;
@@ -315,21 +364,25 @@ function draw() {
                 }
                 if (!isChecked) {
                     var tempG = currentGridSpot.g + 1;
+                    let better = false;
                     if (isChecking) {
                         if (tempG < currentNeighbor.g) { 
                             currentNeighbor.g = tempG
-                            console.log('a')
+                            better = true;
                         }
                     }
                     else { //ERRADO
                         currentNeighbor.g = tempG;
                         checking.push([currentNeighbor.i, currentNeighbor.j])
+                        better = true;
                         // console.log(checking)
                     }
 
-                    currentNeighbor.h = metric(currentNeighbor.topology, 2, [currentNeighbor.i, currentNeighbor.j], end)
-                    currentNeighbor.f = currentNeighbor.h + currentNeighbor.g;
-                    currentNeighbor.camefrom = currentGridSpot;
+                    if (better) {
+                        currentNeighbor.h = metric(topology, ln, [currentNeighbor.i, currentNeighbor.j], end)
+                        currentNeighbor.f = currentNeighbor.h + currentNeighbor.g;
+                        currentNeighbor.camefrom = currentGridSpot;
+                    }
                 }
 
             } 
