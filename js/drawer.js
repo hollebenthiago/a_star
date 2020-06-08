@@ -107,12 +107,17 @@ function setup() {
     var setstartbtn = createButton('Set start/end');
     setstartbtn.parent('buttonsHere')
 
+    //defining the start algorithm button
+    var algbtn = createButton('Start!');
+    algbtn.parent('buttonsHere')
+
     //adding click event for draw walls button
     drawbtn.mousePressed(() => {
         drawGrid = !drawGrid;
         if (drawGrid) {
             drawbtn.elt.style.backgroundColor = 'red'
             changeStart = false;
+            algorithm   = false;
         } 
         else {
             drawbtn.elt.style.backgroundColor = ''
@@ -124,7 +129,8 @@ function setup() {
         changeStart = !changeStart;
         if (changeStart) {
             setstartbtn.elt.style.backgroundColor = 'red'
-            drawGrid = false;
+            drawGrid  = false;
+            algorithm = false;
 
         } 
         else {
@@ -132,9 +138,24 @@ function setup() {
         }
     })
 
+    //adding click event for start algorithm button    
+    algbtn.mousePressed(() => {
+        algorithm = !algorithm;
+        if (algorithm) {
+            algbtn.elt.style.backgroundColor = 'red'
+            drawGrid    = false;
+            changeStart = false;
+        } 
+        else {
+            algbtn.elt.style.backgroundColor = ''
+        }
+    })
+
+
     //adding buttons to list of buttons
     buttons.push(drawbtn);
     buttons.push(setstartbtn);
+    buttons.push(algbtn);
 
     //creating canvas
     var canvas = createCanvas(w, h);
@@ -184,12 +205,14 @@ function setStartEnd(event) {
 //LOOP
 function draw() {
     // code
-    if (algorithm) {}
-    else if (!drawGrid) {
+    if (!drawGrid) {
         buttons[0].elt.style.backgroundColor = ''
     }
-    else if (!changeStart) {
+    if (!changeStart) {
         buttons[1].elt.style.backgroundColor = ''
+    }
+    if (!algorithm) {
+        buttons[2].elt.style.backgroundColor = ''
     }
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
