@@ -1,7 +1,7 @@
 
 // GLOBAL VARIABLES
-const rows      = 55;
-const cols      = 55;
+const rows      = 25;
+const cols      = 25;
 const w         = 700;
 const h         = 700;
 var start       = [0, 0];
@@ -9,10 +9,28 @@ var end         = [rows-1, cols-1];
 var drawGrid    = false;
 var changeStart = false;
 var buttons     = [];
+var checking    = [];
+var checked     = [];
+var path        = [];
 let mousepos;
 let clickpos;
 let algorithm;
 
+//AUX FUNCTIONS
+function removefromArray(array, element) {
+    for (let i = array.length-1; i >= 0; i--) {
+        if (array[i][0] ==  element[0] && array[i][1] == element[1]) {
+            array.splice(i, 1);
+        }
+    }
+}
+
+//METRIC FUNCTION
+function metric(topology, ln, a, b) {
+    if (topology == 'line' && ln == 2) {
+        return Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
+    }
+}
 
 //FUNCTIONS FOR THE GRID SPOTS
 function getSpot(mousepos){
@@ -23,7 +41,7 @@ function getSpot(mousepos){
 }
 
 function getNeighbors(spot) {
-    neighbors = spot.neighbors
+    let neighbors = spot.neighbors
     let result = [];
     for (i = 0; i < neighbors.length; i++) {
         result.push(grid[neighbors[i][0]][neighbors[i][1]])
@@ -34,6 +52,9 @@ function getNeighbors(spot) {
 function gridSpot(i, j, camefrom, topology) {
     this.i        = i;
     this.j        = j;
+    this.f        = 0;
+    this.g        = 0;
+    this.h        = 0;
     this.wall     = false;
     this.camefrom = camefrom;
     this.draw = function(m, n) {
@@ -43,13 +64,45 @@ function gridSpot(i, j, camefrom, topology) {
             fillStyle = fill('blue');
             fillStyle;
         }
-        else if (!this.wall) {
-            fillStyle = fill('white')
+        else if (this.wall) {
+            fillStyle = fill(0)
             fillStyle;
         }
         else {
-            fillStyle = fill(0);
-            fillStyle;
+            var inChecking = false;
+            var inChecked  = false;
+            var inPath     = false;
+            for (i = 0; i < checking.length; i ++) {
+                if (m == checking[i][0] && n == checking[i][1]) {
+                    inChecking = true;
+                    fillStyle  = fill('green');
+                    fillStyle;
+                    break;
+                }
+            }
+            for (i = 0; i < checked.length; i ++) {
+                if (m == checked[i][0] && n == checked[i][1]) {
+                    inChecked  = true;
+                    fillStyle  = fill('red');
+                    fillStyle;
+                    break;
+                }
+            }
+            console.log(path);
+            for (i = 0; i < path.length; i ++) {
+                if (m == path[i][0] && n == path[i][1]) {
+                    inPath  = true;
+                    fillStyle  = fill('blue');
+                    fillStyle;
+                    break;
+                }
+            }
+            if (!inChecking && !inChecked && !inPath) {
+                fillStyle = fill('white');
+                fillStyle;
+            }
+            // fillStyle = fill('white');
+            // fillStyle;
         }
         rect(this.i * w / rows, this.j * h / cols, 
              w / rows - 1, h / cols - 1)
@@ -58,33 +111,17 @@ function gridSpot(i, j, camefrom, topology) {
     this.topology = topology;
     if (this.topology == 'line') {
         this.neighbors = [];
-        if (i == 0 && j == 0) {
-            this.neighbors.push(
-                [i + 1, j],
-                [i, j + 1],
-            )
+        if (i != 0) {
+            this.neighbors.push([i - 1, j])
         }
-        else if (i == 0 && j != 0 ) {
-            this.neighbors.push(
-                [i + 1, j],
-                [i, j + 1],
-                [i, j - 1],
-            )
+        if (i != rows - 1) {
+            this.neighbors.push([i + 1, j])
         }
-        else if (i != 0 && j == 0) {
-            this.neighbors.push(
-                [i + 1, j],
-                [i - 1, j],
-                [i, j + 1],
-            )
+        if (j != 0) {
+            this.neighbors.push([i, j - 1])
         }
-        else {
-            this.neighbors.push(
-                [i + 1, j],
-                [i - 1, j],
-                [i, j + 1],
-                [i, j - 1],
-            )
+        if (j != cols - 1) {
+            this.neighbors.push([i, j + 1])
         }
     }
 }
@@ -100,7 +137,7 @@ for (let i = 0; i < rows; i++) {
 function setup() {
 
     //defining draw walls button
-    var drawbtn = createButton('Draw walls');
+    var drawbtn = createButton('Draw/Erase walls');
     drawbtn.parent('buttonsHere')
 
     //defining change start/end button
@@ -108,8 +145,13 @@ function setup() {
     setstartbtn.parent('buttonsHere')
 
     //defining the start algorithm button
-    var algbtn = createButton('Start!');
+    var algbtn = createButton('Start/Stop');
     algbtn.parent('buttonsHere')
+
+    //padding between buttons
+    drawbtn.elt.style.marginLeft = '35px';
+    setstartbtn.elt.style.marginLeft = '35px';
+    algbtn.elt.style.marginLeft = '35px';
 
     //adding click event for draw walls button
     drawbtn.mousePressed(() => {
@@ -118,6 +160,7 @@ function setup() {
             drawbtn.elt.style.backgroundColor = 'red'
             changeStart = false;
             algorithm   = false;
+            path        = [];
         } 
         else {
             drawbtn.elt.style.backgroundColor = ''
@@ -131,12 +174,12 @@ function setup() {
             setstartbtn.elt.style.backgroundColor = 'red'
             drawGrid  = false;
             algorithm = false;
-
+            path      = [];
         } 
         else {
             setstartbtn.elt.style.backgroundColor = ''
         }
-    })
+    })   
 
     //adding click event for start algorithm button    
     algbtn.mousePressed(() => {
@@ -145,6 +188,7 @@ function setup() {
             algbtn.elt.style.backgroundColor = 'red'
             drawGrid    = false;
             changeStart = false;
+            checking.push(start);
         } 
         else {
             algbtn.elt.style.backgroundColor = ''
@@ -213,10 +257,88 @@ function draw() {
     }
     if (!algorithm) {
         buttons[2].elt.style.backgroundColor = ''
+        checking = [];
+        checked  = []; 
     }
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
             grid[i][j].draw(i, j);
+        }
+    }
+    if (algorithm) {
+        path = [];
+        if (checking.length > 0) {
+            //still needs to check something
+            var winner = 0;
+            for (var i = 0; i < checking.length; i++) {
+                if (grid[checking[i][0]][checking[i][1]].f < grid[checking[winner][0]][checking[winner][1]].f) {
+                    winner = i;
+                }
+            }
+            var current = checking[winner];
+            if (current[0] == end[0] && current[1] == end[1]) {
+                console.log('uhul')
+                path = [end];
+                counter = current;
+                while (grid[counter[0]][counter[1]].camefrom) {
+                    let new_i = grid[counter[0]][counter[1]].camefrom.i;
+                    let new_j = grid[counter[0]][counter[1]].camefrom.j;
+                    counter = [new_i, new_j]
+                    path.push(counter);
+                }
+                algorithm = !algorithm
+            }
+
+            removefromArray(checking, current);
+            checked.push(current);
+            let currentGridSpot = grid[current[0]][current[1]];
+            let neighbors = currentGridSpot.neighbors;
+            for (let i = 0; i < neighbors.length; i++) {
+                var neighbor        = neighbors[i];
+                var currentNeighbor = grid[neighbor[0]][neighbor[1]];
+                if (currentNeighbor.wall) {
+                    continue
+                    console.log('wall')
+                }
+                var isChecked       = false;
+                var isChecking      = false;
+                for (let j = 0; j < checked.length; j++) {
+                    if (neighbor[0] == checked[j][0] && neighbor[1] == checked[j][1]) {
+                        isChecked = true;
+                        break
+                    }
+                }
+                for (let j = 0; j < checking.length; j++) {
+                    if (neighbor[0] == checking[j][0] && neighbor[1] == checking[j][1]) {
+                        isChecking = true;
+                        break
+                    }
+                }
+                if (!isChecked) {
+                    var tempG = currentGridSpot.g + 1;
+                    if (isChecking) {
+                        if (tempG < currentNeighbor.g) { 
+                            currentNeighbor.g = tempG
+                            console.log('a')
+                        }
+                    }
+                    else { //ERRADO
+                        currentNeighbor.g = tempG;
+                        checking.push([currentNeighbor.i, currentNeighbor.j])
+                        // console.log(checking)
+                    }
+
+                    currentNeighbor.h = metric(currentNeighbor.topology, 2, [currentNeighbor.i, currentNeighbor.j], end)
+                    currentNeighbor.f = currentNeighbor.h + currentNeighbor.g;
+                    currentNeighbor.camefrom = currentGridSpot;
+                }
+
+            } 
+
+        }
+        else {
+            //no solution found
+            console.log('whoopsie')
         }
     }
     

@@ -1,4 +1,9 @@
 /* there will be something here later */
 .buttons {
     padding-bottom: 15px;
+    margin-left: 35px;
+}
+
+.biggerfont {
+    font-size: 20px;
 }
