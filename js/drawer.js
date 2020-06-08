@@ -1,84 +1,200 @@
-const rows = 5;
-const cols = 5;
-const w    = 700;
-const h    = 700;
-let mousepos;
 
+// GLOBAL VARIABLES
+const rows      = 55;
+const cols      = 55;
+const w         = 700;
+const h         = 700;
+var start       = [0, 0];
+var end         = [rows-1, cols-1];
+var drawGrid    = false;
+var changeStart = false;
+var buttons     = [];
+let mousepos;
+let clickpos;
+let algorithm;
+
+
+//FUNCTIONS FOR THE GRID SPOTS
+function getSpot(mousepos){
+    let theI = Math.floor(mousepos.x/(w/rows))
+    let theJ = Math.floor(mousepos.y/(h/cols))
+    return {i: theI,
+            j: theJ}
+}
+
+function getNeighbors(spot) {
+    neighbors = spot.neighbors
+    let result = [];
+    for (i = 0; i < neighbors.length; i++) {
+        result.push(grid[neighbors[i][0]][neighbors[i][1]])
+    }
+    return result;
+}
 
 function gridSpot(i, j, camefrom, topology) {
     this.i        = i;
     this.j        = j;
     this.wall     = false;
     this.camefrom = camefrom;
-    if (this.wall) {
-        this.fill = fill('green');
-    }
-    else {
-        this.fill = fill('red')
-    }
-    this.draw = function() {
-        rect(this.i * w / rows, 
-            this.j * h / cols, 
-            w / rows - 1, 
-            h / cols - 1)
+    this.draw = function(m, n) {
+        
+        let fillStyle;
+        if ((start[0] == m && start[1] == n) || (end[0] == m && end[1] == n)) {
+            fillStyle = fill('blue');
+            fillStyle;
+        }
+        else if (!this.wall) {
+            fillStyle = fill('white')
+            fillStyle;
+        }
+        else {
+            fillStyle = fill(0);
+            fillStyle;
+        }
+        rect(this.i * w / rows, this.j * h / cols, 
+             w / rows - 1, h / cols - 1)
+        fillStyle = undefined;
     }
     this.topology = topology;
     if (this.topology == 'line') {
         this.neighbors = [];
+        if (i == 0 && j == 0) {
+            this.neighbors.push(
+                [i + 1, j],
+                [i, j + 1],
+            )
+        }
+        else if (i == 0 && j != 0 ) {
+            this.neighbors.push(
+                [i + 1, j],
+                [i, j + 1],
+                [i, j - 1],
+            )
+        }
+        else if (i != 0 && j == 0) {
+            this.neighbors.push(
+                [i + 1, j],
+                [i - 1, j],
+                [i, j + 1],
+            )
+        }
+        else {
+            this.neighbors.push(
+                [i + 1, j],
+                [i - 1, j],
+                [i, j + 1],
+                [i, j - 1],
+            )
+        }
     }
 }
-
+//START GRID
 var grid = new Array(rows);
 
 for (let i = 0; i < rows; i++) {
     grid[i] = new Array(cols);
 }
 
+
+//SETUP FUNCTION
 function setup() {
-    
+
+    //defining draw walls button
+    var drawbtn = createButton('Draw walls');
+    drawbtn.parent('buttonsHere')
+
+    //defining change start/end button
+    var setstartbtn = createButton('Set start/end');
+    setstartbtn.parent('buttonsHere')
+
+    //adding click event for draw walls button
+    drawbtn.mousePressed(() => {
+        drawGrid = !drawGrid;
+        if (drawGrid) {
+            drawbtn.elt.style.backgroundColor = 'red'
+            changeStart = false;
+        } 
+        else {
+            drawbtn.elt.style.backgroundColor = ''
+        }
+    })
+
+    //adding click event for change start/end button    
+    setstartbtn.mousePressed(() => {
+        changeStart = !changeStart;
+        if (changeStart) {
+            setstartbtn.elt.style.backgroundColor = 'red'
+            drawGrid = false;
+
+        } 
+        else {
+            setstartbtn.elt.style.backgroundColor = ''
+        }
+    })
+
+    //adding buttons to list of buttons
+    buttons.push(drawbtn);
+    buttons.push(setstartbtn);
+
+    //creating canvas
     var canvas = createCanvas(w, h);
     canvas.parent('canvasHere')
-    canvas.id = 'canvas-id';
-    console.log(canvas.id);
+    //initial drawing of the grid
     var rect = document.getElementById('defaultCanvas0').getBoundingClientRect();
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
             grid[i][j] = new gridSpot(i, j, undefined, 'line');
-            if (i + j % 2 == 0) {
-                grid[i][j].wall = false;
-                fill(0);
-            }
-            else {
-                fill('white')
-            }
-            
-            grid[i][j].draw();
+            grid[i][j].draw(i, j);
         }
     }
-    console.log(grid)
-    document.getElementById('defaultCanvas0').addEventListener('mousemove', (event) => {
-        mousepos = {x: (event.clientX - rect.left) / (rect.right - rect.left) * w,
-                    y: (event.clientY - rect.top) / (rect.bottom - rect.top) * h
-                };
-        console.log(mousepos)
-    })
+    //adding draw walls and set start/end events to canvas
+    document.getElementById('defaultCanvas0').addEventListener('mousemove', addWalls)
+    document.getElementById('defaultCanvas0').addEventListener('click', setStartEnd)    
 }
 
+//ADD WALLS EVENT/FUNCTION
+function addWalls(event) {
+    var rect = document.getElementById('defaultCanvas0').getBoundingClientRect();
+    mousepos = {x: (event.clientX - rect.left) / (rect.right - rect.left) * w,
+                y: (event.clientY - rect.top) / (rect.bottom - rect.top) * h
+            };
+    let toWall = getSpot(mousepos)
+    if (event.shiftKey && drawGrid) {
+        grid[toWall.i][toWall.j].wall = true;
+    }
+    else if (!event.shiftKey && event.ctrlKey && drawGrid) {
+        grid[toWall.i][toWall.j].wall = false;
+    }
+}
 
+function setStartEnd(event) {
+    var rect = document.getElementById('defaultCanvas0').getBoundingClientRect();
+    clickpos = {x: (event.clientX - rect.left) / (rect.right - rect.left) * w,
+                y: (event.clientY - rect.top) / (rect.bottom - rect.top) * h
+            };
+    let oneEnd = getSpot(clickpos)
+    if (event.shiftKey && changeStart) {
+        start = [oneEnd.i, oneEnd.j]
+    }
+    else if (!event.shiftKey && event.ctrlKey && changeStart) {
+        end = [oneEnd.i, oneEnd.j]
+    }
+}
 
+//LOOP
 function draw() {
-// code
-    clear();
+    // code
+    if (algorithm) {}
+    else if (!drawGrid) {
+        buttons[0].elt.style.backgroundColor = ''
+    }
+    else if (!changeStart) {
+        buttons[1].elt.style.backgroundColor = ''
+    }
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
-            if ((i + j) % 2 == 0) {
-                grid[i][j].wall = false;
-                fill(0);
-            }
-            else {
-                fill('white')
-            }
-            grid[i][j].draw();
+            grid[i][j].draw(i, j);
         }
     }
+    
 }
