@@ -88,7 +88,6 @@ function gridSpot(i, j, camefrom, topology) {
                     break;
                 }
             }
-            console.log(path);
             for (i = 0; i < path.length; i ++) {
                 if (m == path[i][0] && n == path[i][1]) {
                     inPath  = true;
