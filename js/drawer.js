@@ -36,7 +36,7 @@ function metric(topology, ln, a, b) {
         return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
     }
     else if (topology == 'cylinder' && ln == 1) {
-        return Math.min(Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]), Math.abs((rows - a[0] - b[0]) % rows) + Math.abs((cols - a[1] - b[1] % cols)))
+        return Math.min(Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]), Math.abs((rows - a[0] - b[0]) % rows) + Math.abs(a[1] - b[1]))
     }
     else if (topology == 'line' && ln == 1) {
         return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
@@ -241,10 +241,10 @@ function setup() {
     topSel.changed(changeTopology);
 
     //padding between buttons
-    drawbtn.elt.style.marginLeft = '35px';
+    drawbtn.elt.style.marginLeft     = '35px';
     setstartbtn.elt.style.marginLeft = '35px';
-    algbtn.elt.style.marginLeft = '35px';
-    topSel.elt.style.marginLeft = '35px';
+    algbtn.elt.style.marginLeft      = '35px';
+    topSel.elt.style.marginLeft      = '35px';
 
     //adding buttons to list of buttons
     buttons.push(drawbtn);
