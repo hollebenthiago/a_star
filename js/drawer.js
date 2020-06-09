@@ -87,10 +87,16 @@ function gridSpot(i, j, camefrom, topology, ln) {
         if ((start[0] == m && start[1] == n) || (end[0] == m && end[1] == n)) {
             fillStyle = fill('blue');
             fillStyle;
+            rect(this.i * w / rows, this.j * h / cols, 
+                w / rows - 1, h / cols - 1)
+            fillStyle = undefined;
         }
         else if (this.wall) {
             fillStyle = fill(0)
             fillStyle;
+            rect(this.i * w / rows, this.j * h / cols, 
+                w / rows - 1, h / cols - 1)
+            fillStyle = undefined;
         }
         else {
             var inChecking = false;
@@ -101,6 +107,9 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     inChecking = true;
                     fillStyle  = fill('green');
                     fillStyle;
+                    rect(this.i * w / rows, this.j * h / cols, 
+                        w / rows - 1, h / cols - 1)
+                    fillStyle = undefined;
                     break;
                 }
             }
@@ -109,6 +118,9 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     inChecked  = true;
                     fillStyle  = fill('red');
                     fillStyle;
+                    rect(this.i * w / rows, this.j * h / cols, 
+                        w / rows - 1, h / cols - 1)
+                    fillStyle = undefined;
                     break;
                 }
             }
@@ -117,17 +129,20 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     inPath  = true;
                     fillStyle  = fill('blue');
                     fillStyle;
+                    rect(this.i * w / rows, this.j * h / cols, 
+                        w / rows - 1, h / cols - 1)
+                    fillStyle = undefined;
                     break;
                 }
             }
-            if (!inChecking && !inChecked && !inPath) {
-                fillStyle = fill('white');
-                fillStyle;
-            }
+            // if (!inChecking && !inChecked && !inPath) {
+            //     fillStyle = fill('white');
+            //     fillStyle;
+            // }
         }
-        rect(this.i * w / rows, this.j * h / cols, 
-             w / rows - 1, h / cols - 1)
-        fillStyle = undefined;
+        // rect(this.i * w / rows, this.j * h / cols, 
+        //      w / rows - 1, h / cols - 1)
+        // fillStyle = undefined;
     }
     this.topology     = topology;
     this.addNeighbors = function (topology, ln, i, j) {
@@ -420,6 +435,7 @@ function changeLn() {
 //LOOP
 function draw() {
     // code
+    clear()
     if (!drawGrid) {
         buttons[0].elt.style.backgroundColor = ''
     }
