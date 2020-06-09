@@ -41,6 +41,18 @@ function metric(topology, ln, a, b) {
     else if (topology == 'cylinder' && ln == 'No diagonals') {
         return Math.min(Math.abs(a[0] - b[0]), Math.abs((a[0] + b[0]) % rows)) + Math.abs(a[1] - b[1])
     }
+    else if (topology == 'torus' && ln == 'Allow diagonals') {
+        return Math.min(Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2), 
+                        Math.sqrt(((a[0] + b[0]) % rows)**2 + (a[1] - b[1])**2),
+                        Math.sqrt((a[0] - b[0])**2 + ((a[1] + b[1]) % cols)**2),
+                        Math.sqrt(((a[0] + b[0]) % rows)**2 + ((a[1] + b[1]) % cols)**2))
+    }
+    else if (topology == 'torus' && ln == 'No diagonals') {
+        return Math.min(Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]), 
+                        Math.abs((a[0] + b[0]) % rows) + Math.abs(a[1] - b[1]),
+                        Math.abs(a[0] - b[0]) + Math.abs((a[1] + b[1]) % cols),
+                        Math.abs((a[0] + b[0]) % rows + Math.abs((a[1] + b[1]) % cols)))
+    }
 }
 
 //FUNCTIONS FOR THE GRID SPOTS
@@ -154,7 +166,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
                 this.neighbors.push([i - 1, j])
             }
             if (i == 0) {
-                this.neighbors.push([rows-1, j])
+                this.neighbors.push([rows - 1, j])
             }
             this.neighbors.push([(i + 1) % rows, j])
             if (j != 0) {
@@ -180,6 +192,61 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     }
                     else {
                         this.neighbors.push([rows - 1, j + 1]);
+                    }                 
+                }
+            }
+        }
+        else if (topology == 'torus') {
+            this.neighbors = [];
+            if (i != 0) {
+                this.neighbors.push([i - 1, j])
+            }
+            if (i == 0) {
+                this.neighbors.push([rows - 1, j])
+            }
+            this.neighbors.push([(i + 1) % rows, j])
+            if (j != 0) {
+                this.neighbors.push([i, j - 1])
+            }
+            if (j == 0) {
+                this.neighbors.push([i, cols - 1])
+            }
+            this.neighbors.push([i, (j + 1) % cols])
+            if (ln == 'Allow diagonals') {
+                if (j != 0) {
+                    if (i != 0) {
+                        this.neighbors.push([i - 1, j - 1]);
+                    }
+                    else {
+                        this.neighbors.push([rows - 1, j - 1]);
+                    }
+                    this.neighbors.push([(i + 1) % rows, j - 1]);                    
+                }
+                if (j == 0) {
+                    if (i != 0) {
+                        this.neighbors.push([i - 1, cols - 1]);
+                    }
+                    else {
+                        this.neighbors.push([rows - 1, cols - 1]);
+                    }
+                    this.neighbors.push([(i + 1) % rows, cols - 1]);                    
+                }
+                if (j != cols - 1) {
+                    this.neighbors.push([(i + 1) % rows, j + 1]);   
+                    if (i != 0) {
+                        this.neighbors.push([i - 1, j + 1]);
+                    }
+                    else {
+                        this.neighbors.push([rows - 1, j + 1]);
+                    }                 
+                }
+                if (j == cols - 1) {
+                    this.neighbors.push([(i + 1) % rows, 0]);   
+                    if (i != 0) {
+                        this.neighbors.push([i - 1, 0]);
+                    }
+                    else {
+                        this.neighbors.push([rows - 1, 0]);
                     }                 
                 }
             }
@@ -271,6 +338,7 @@ function setup() {
     topSel.parent('buttonsHere');
     topSel.option('plane');
     topSel.option('cylinder')
+    topSel.option('torus');
     topSel.selected('plane');
     topSel.changed(changeTopology);
 
