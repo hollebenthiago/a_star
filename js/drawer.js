@@ -13,7 +13,7 @@ var checking    = [];
 var checked     = [];
 var path        = [];
 var topology    = 'plane';
-var ln          = 1;
+var ln          = 'No diagonals';
 let mousepos;
 let clickpos;
 let algorithm;
@@ -29,17 +29,17 @@ function removefromArray(array, element) {
 
 //METRIC FUNCTION
 function metric(topology, ln, a, b) {
-    if (topology == 'plane' && ln == 2) {
+    if (topology == 'plane' && ln == 'Allow diagonals') {
         return Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
     }
-    else if (topology == 'plane' && ln == 1) {
+    else if (topology == 'plane' && ln == 'No diagonals') {
         return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
     }
-    else if (topology == 'cylinder' && ln == 1) {
-        return Math.min(Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]), Math.abs((rows - a[0] - b[0]) % rows) + Math.abs(a[1] - b[1]))
+    else if (topology == 'cylinder' && ln == 'Allow diagonals') {
+        return Math.sqrt(Math.min(Math.abs(a[0] - b[0]), Math.abs((a[0] + b[0]) % rows))**2 + Math.abs(a[1] - b[1])**2)
     }
-    else if (topology == 'cylinder' && ln == 2) {
-        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
+    else if (topology == 'cylinder' && ln == 'No diagonals') {
+        return Math.min(Math.abs(a[0] - b[0]), Math.abs((a[0] + b[0]) % rows)) + Math.abs(a[1] - b[1])
     }
 }
 
@@ -133,6 +133,20 @@ function gridSpot(i, j, camefrom, topology, ln) {
             if (j != cols - 1) {
                 this.neighbors.push([i, j + 1])
             }
+            if (ln == 'Allow diagonals') {
+                if (i != 0 && j != 0) {
+                    this.neighbors.push([i - 1, j - 1]);
+                }
+                if (i != 0 && j != cols - 1) {
+                    this.neighbors.push([i - 1, j + 1]);
+                }
+                if (i != rows - 1 && j != 0) {
+                    this.neighbors.push([i + 1, j - 1]);
+                }
+                if (i != rows - 1 && j != cols - 1) {
+                    this.neighbors.push([i + 1, j + 1]);
+                }
+            }
         }
         else if (topology == 'cylinder') {
             this.neighbors = [];
@@ -148,6 +162,26 @@ function gridSpot(i, j, camefrom, topology, ln) {
             }
             if (j != cols - 1) {
                 this.neighbors.push([i, j + 1])
+            }
+            if (ln == 'Allow diagonals') {
+                if (j != 0) {
+                    if (i != 0) {
+                        this.neighbors.push([i - 1, j - 1]);
+                    }
+                    else {
+                        this.neighbors.push([rows - 1, j - 1]);
+                    }
+                    this.neighbors.push([(i + 1) % rows, j - 1]);                    
+                }
+                if (j != cols - 1) {
+                    this.neighbors.push([(i + 1) % rows, j + 1]);   
+                    if (i != 0) {
+                        this.neighbors.push([i - 1, j + 1]);
+                    }
+                    else {
+                        this.neighbors.push([rows - 1, j + 1]);
+                    }                 
+                }
             }
         }
     }
@@ -240,17 +274,28 @@ function setup() {
     topSel.selected('plane');
     topSel.changed(changeTopology);
 
+    //defining diagonal selector
+    lnSel = createSelect();
+    lnSel.parent('buttonsHere');
+    lnSel.option('Allow diagonals');
+    lnSel.option('No diagonals')
+    lnSel.selected('No diagonals');
+    lnSel.changed(changeLn);
+
+
     //padding between buttons
     drawbtn.elt.style.marginLeft     = '35px';
     setstartbtn.elt.style.marginLeft = '35px';
     algbtn.elt.style.marginLeft      = '35px';
     topSel.elt.style.marginLeft      = '35px';
+    lnSel.elt.style.marginLeft       = '35px';
 
     //adding buttons to list of buttons
     buttons.push(drawbtn);
     buttons.push(setstartbtn);
     buttons.push(algbtn);
     buttons.push(topSel);
+    buttons.push(lnSel);
 
     //adding draw walls and set start/end events to canvas
     document.getElementById('defaultCanvas0').addEventListener('mousemove', addWalls)
@@ -288,6 +333,15 @@ function setStartEnd(event) {
 
 function changeTopology() {
     topology = topSel.value();
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            grid[i][j].addNeighbors(topology, ln, i, j);
+        }
+    }
+}
+
+function changeLn() {
+    ln = lnSel.value();
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
             grid[i][j].addNeighbors(topology, ln, i, j);
@@ -375,7 +429,7 @@ function draw() {
                             better = true;
                         }
                     }
-                    else { //ERRADO
+                    else { 
                         currentNeighbor.g = tempG;
                         checking.push([currentNeighbor.i, currentNeighbor.j])
                         better = true;
