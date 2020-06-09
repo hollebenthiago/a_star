@@ -36,22 +36,22 @@ function metric(topology, ln, a, b) {
         return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
     }
     else if (topology == 'cylinder' && ln == 'Allow diagonals') {
-        return Math.sqrt(Math.min(Math.abs(a[0] - b[0]), Math.abs((a[0] + b[0]) % rows))**2 + Math.abs(a[1] - b[1])**2)
+        return Math.sqrt(Math.min(Math.abs(a[0] - b[0]), Math.abs((rows - a[0] - b[0]) % rows))**2 + Math.abs(a[1] - b[1])**2)
     }
     else if (topology == 'cylinder' && ln == 'No diagonals') {
-        return Math.min(Math.abs(a[0] - b[0]), Math.abs((a[0] + b[0]) % rows)) + Math.abs(a[1] - b[1])
+        return Math.min(Math.abs(a[0] - b[0]), Math.abs((rows - a[0] - b[0]) % rows)) + Math.abs(a[1] - b[1])
     }
     else if (topology == 'torus' && ln == 'Allow diagonals') {
-        return Math.min(Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2), 
-                        Math.sqrt(((a[0] + b[0]) % rows)**2 + (a[1] - b[1])**2),
-                        Math.sqrt((a[0] - b[0])**2 + ((a[1] + b[1]) % cols)**2),
-                        Math.sqrt(((a[0] + b[0]) % rows)**2 + ((a[1] + b[1]) % cols)**2))
+        return Math.min(Math.sqrt((a[0]  - b[0])**2 + (a[1]  - b[1])**2), 
+                        Math.sqrt(((rows - a[0] - b[0]) % rows)**2  + (a[1]  - b[1])**2),
+                        Math.sqrt((a[0]  - b[0])**2 + ((cols - a[1]   - b[1]) % cols)**2),
+                        Math.sqrt(((rows - a[0] - b[0]) % rows)**2  + ((cols - a[1] - b[1]) % cols)**2))
     }
     else if (topology == 'torus' && ln == 'No diagonals') {
-        return Math.min(Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]), 
-                        Math.abs((a[0] + b[0]) % rows) + Math.abs(a[1] - b[1]),
-                        Math.abs(a[0] - b[0]) + Math.abs((a[1] + b[1]) % cols),
-                        Math.abs((a[0] + b[0]) % rows + Math.abs((a[1] + b[1]) % cols)))
+        return Math.min(Math.abs(a[0]  - b[0]) + Math.abs(a[1]  - b[1]), 
+                        Math.abs((rows - a[0]  - b[0]) % rows)  + Math.abs(a[1]  - b[1]),
+                        Math.abs(a[0]  - b[0]) + Math.abs((cols - a[1] - b[1])   % cols),
+                        Math.abs((rows - a[0]  - b[0]) % rows   + Math.abs((cols - a[1] - b[1]) % cols)))
     }
 }
 
