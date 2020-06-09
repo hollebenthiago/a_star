@@ -370,6 +370,8 @@ function draw() {
     }
     if (algorithm) {
         path = [];
+        grid[end[0]][end[1]].wall = false;
+        grid[start[0]][start[1]].wall = false;
         if (checking.length > 0) {
             //still needs to check something
             var winner = 0;
