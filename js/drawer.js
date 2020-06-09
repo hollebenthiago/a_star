@@ -12,7 +12,7 @@ var buttons     = [];
 var checking    = [];
 var checked     = [];
 var path        = [];
-var topology    = 'line';
+var topology    = 'plane';
 var ln          = 1;
 let mousepos;
 let clickpos;
@@ -29,16 +29,16 @@ function removefromArray(array, element) {
 
 //METRIC FUNCTION
 function metric(topology, ln, a, b) {
-    if (topology == 'line' && ln == 2) {
+    if (topology == 'plane' && ln == 2) {
         return Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
     }
-    else if (topology == 'line' && ln == 1) {
+    else if (topology == 'plane' && ln == 1) {
         return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
     }
     else if (topology == 'cylinder' && ln == 1) {
         return Math.min(Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]), Math.abs((rows - a[0] - b[0]) % rows) + Math.abs(a[1] - b[1]))
     }
-    else if (topology == 'line' && ln == 1) {
+    else if (topology == 'cylinder' && ln == 2) {
         return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1])
     }
 }
@@ -118,8 +118,8 @@ function gridSpot(i, j, camefrom, topology, ln) {
         fillStyle = undefined;
     }
     this.topology     = topology;
-    this.addNeighbors = function (topology, i, j) {
-        if (topology == 'line') {
+    this.addNeighbors = function (topology, ln, i, j) {
+        if (topology == 'plane') {
             this.neighbors = [];
             if (i != 0) {
                 this.neighbors.push([i - 1, j])
@@ -227,7 +227,7 @@ function setup() {
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
             grid[i][j] = new gridSpot(i, j, undefined, topology, ln);
-            grid[i][j].addNeighbors(topology, i, j);
+            grid[i][j].addNeighbors(topology, ln, i, j);
             grid[i][j].draw(i, j);
         }
     }
@@ -235,9 +235,9 @@ function setup() {
     //defining topology selector
     topSel = createSelect();
     topSel.parent('buttonsHere');
-    topSel.option('line');
+    topSel.option('plane');
     topSel.option('cylinder')
-    topSel.selected('line');
+    topSel.selected('plane');
     topSel.changed(changeTopology);
 
     //padding between buttons
@@ -290,7 +290,7 @@ function changeTopology() {
     topology = topSel.value();
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
-            grid[i][j].addNeighbors(topology, i, j);
+            grid[i][j].addNeighbors(topology, ln, i, j);
         }
     }
 }
@@ -320,7 +320,7 @@ function draw() {
             //still needs to check something
             var winner = 0;
             for (var i = 0; i < checking.length; i++) {
-                if (grid[checking[i][0]][checking[i][1]].f < grid[checking[winner][0]][checking[winner][1]].f) {
+                if (grid[checking[i][0]][checking[i][1]].f <= grid[checking[winner][0]][checking[winner][1]].f) {
                     winner = i;
                 }
             }
@@ -328,11 +328,16 @@ function draw() {
             if (current[0] == end[0] && current[1] == end[1]) {
                 path = [end];
                 counter = current;
+                let c = 0;
                 while (grid[counter[0]][counter[1]].camefrom) {
+                    c ++;
                     let new_i = grid[counter[0]][counter[1]].camefrom.i;
                     let new_j = grid[counter[0]][counter[1]].camefrom.j;
                     counter = [new_i, new_j]
                     path.push(counter);
+                     if (new_i == start[0] && new_j == start[1]){
+                         break
+                     }
                 }
                 algorithm = !algorithm
             }
