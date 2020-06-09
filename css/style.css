@@ -3,6 +3,9 @@
     padding-bottom: 15px;
     margin-left: 35px;
 }
+canvas {
+    border: 0.5px solid
+}
 
 .biggerfont {
     font-size: 20px;

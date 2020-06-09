@@ -88,14 +88,14 @@ function gridSpot(i, j, camefrom, topology, ln) {
             fillStyle = fill('blue');
             fillStyle;
             rect(this.i * w / rows, this.j * h / cols, 
-                w / rows - 1, h / cols - 1)
+                w / rows, h / cols)
             fillStyle = undefined;
         }
         else if (this.wall) {
             fillStyle = fill(0)
             fillStyle;
             rect(this.i * w / rows, this.j * h / cols, 
-                w / rows - 1, h / cols - 1)
+                w / rows, h / cols)
             fillStyle = undefined;
         }
         else {
@@ -108,7 +108,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     fillStyle  = fill('green');
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
-                        w / rows - 1, h / cols - 1)
+                        w / rows, h / cols)
                     fillStyle = undefined;
                     break;
                 }
@@ -119,7 +119,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     fillStyle  = fill('red');
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
-                        w / rows - 1, h / cols - 1)
+                        w / rows, h / cols)
                     fillStyle = undefined;
                     break;
                 }
@@ -130,7 +130,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     fillStyle  = fill('blue');
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
-                        w / rows - 1, h / cols - 1)
+                        w / rows, h / cols)
                     fillStyle = undefined;
                     break;
                 }
