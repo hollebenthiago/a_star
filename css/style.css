@@ -1,8 +1,11 @@
 /* there will be something here later */
-.buttons .selector{
-    padding-bottom: 15px;
-    margin-left: 35px;
+button,  select{
+    margin-bottom: 15px;
+    margin-left: 0;
+    width: 105px;
+    height: 60px;
 }
+
 canvas {
     border: 0.5px solid
 }

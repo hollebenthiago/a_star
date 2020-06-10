@@ -10,15 +10,15 @@ for (let i = 0; i < rows; i++) {
 function setup() {
 
     //defining draw walls button
-    var drawbtn = createButton('Draw/Erase walls');
+    var drawbtn = createButton('Walls');
     drawbtn.parent('buttonsHere')
 
     //defining change start/end button
-    var setstartbtn = createButton('Set start/end');
+    var setstartbtn = createButton('End points');
     setstartbtn.parent('buttonsHere')
 
     //defining the start algorithm button
-    var algbtn = createButton('Start/Stop');
+    var algbtn = createButton('Start');
     algbtn.parent('buttonsHere')
 
     
