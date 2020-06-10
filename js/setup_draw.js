@@ -27,13 +27,13 @@ function setup() {
     drawbtn.mousePressed(() => {
         drawGrid = !drawGrid;
         if (drawGrid) {
-            drawbtn.elt.style.backgroundColor = 'red'
+            drawbtn.elt.style.border = 'solid 5px black'
             changeStart = false;
             algorithm   = false;
             path        = [];
         } 
         else {
-            drawbtn.elt.style.backgroundColor = ''
+            drawbtn.elt.style.border = 'solid 1px #555'
         }
     })
 
@@ -41,13 +41,13 @@ function setup() {
     setstartbtn.mousePressed(() => {
         changeStart = !changeStart;
         if (changeStart) {
-            setstartbtn.elt.style.backgroundColor = 'red'
+            setstartbtn.elt.style.border = 'solid 5px black'
             drawGrid  = false;
             algorithm = false;
             path      = [];
         } 
         else {
-            setstartbtn.elt.style.backgroundColor = ''
+            setstartbtn.elt.style.border = 'solid 1px #555'
         }
     })   
 
@@ -55,13 +55,13 @@ function setup() {
     algbtn.mousePressed(() => {
         algorithm = !algorithm;
         if (algorithm) {
-            algbtn.elt.style.backgroundColor = 'red'
+            algbtn.elt.style.border = 'solid 5px black'
             drawGrid    = false;
             changeStart = false;
             checking.push(start);
         } 
         else {
-            algbtn.elt.style.backgroundColor = ''
+            algbtn.elt.style.border = 'solid 1px #555'
         }
     })
 
@@ -94,14 +94,6 @@ function setup() {
     lnSel.option('No diagonals')
     lnSel.selected('No diagonals');
     lnSel.changed(changeLn);
-
-
-    //padding between buttons
-    drawbtn.elt.style.marginLeft     = '35px';
-    setstartbtn.elt.style.marginLeft = '35px';
-    algbtn.elt.style.marginLeft      = '35px';
-    topSel.elt.style.marginLeft      = '35px';
-    lnSel.elt.style.marginLeft       = '35px';
 
     //adding buttons to list of buttons
     buttons.push(drawbtn);
@@ -167,13 +159,13 @@ function draw() {
     // code
     clear()
     if (!drawGrid) {
-        buttons[0].elt.style.backgroundColor = ''
+        buttons[0].elt.style.border = 'solid 1px #555'
     }
     if (!changeStart) {
-        buttons[1].elt.style.backgroundColor = ''
+        buttons[1].elt.style.border = 'solid 1px #555'
     }
     if (!algorithm) {
-        buttons[2].elt.style.backgroundColor = ''
+        buttons[2].elt.style.border = 'solid 1px #555'
         checking = [];
         checked  = []; 
     }
@@ -237,7 +229,12 @@ function draw() {
                     }
                 }
                 if (!isChecked) {
-                    var tempG = currentGridSpot.g + 1;
+                    if (currentGridSpot.i != currentNeighbor.i && currentGridSpot.j != currentNeighbor.j) {
+                        var tempG = currentGridSpot.g + diagWeight;
+                    }
+                    else {
+                        var tempG = currentGridSpot.g + lineWeight;
+                    }
                     let better = false;
                     if (isChecking) {
                         if (tempG < currentNeighbor.g) { 

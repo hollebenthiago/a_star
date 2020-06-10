@@ -1,9 +1,74 @@
 /* there will be something here later */
-button,  select{
+/* button,  select{
     margin-bottom: 15px;
     margin-left: 0;
     width: 105px;
     height: 60px;
+    -moz-box-shadow:    inset 0 1px 0 0 #4d73bf;
+    -webkit-box-shadow: inset 0 1px 0 0 #4d73bf;
+    box-shadow:         inset 0 1px 0 0 #4d73bf; 
+    background: #4267b2;
+    border: solid 1px #4267b2;
+    color: white;
+    text-shadow: 0 1px 0 #3359a5;
+    border-radius: 15%;
+}
+    button:hover, select:hover {
+        background: #2b54a7;
+    }
+    button:active {
+        background: red;
+    } */
+body {
+    font-family: 'Merriweather', Georgia, Times; 
+    font-weight: 700;
+}
+h1, h2, h3, h4, h5, h6, p, div, span, a, button, select, .popup, .button {
+    font-family: 'Merriweather', Georgia, Times; 
+    font-weight: 700;
+}
+
+h1 {
+    text-align: center;
+}
+
+canvas{
+    background-color: rgb(145, 121, 148);
+}
+
+button, select {
+    cursor: pointer;
+    width: 150px;
+    height: 60px;
+    position: relative;
+    display: inline-block;
+    color: #3e0e45;
+    border-radius: 15%;
+    margin-bottom: 15px;
+    margin-left: 35px;
+    background-color: #3e0e45;
+
+    background-image: url(test.png);
+    border: solid 1px #555;
+    color: #ffffff;
+    transition: all ease 4s;
+}
+
+select {
+    padding-left: 15px;
+}
+
+button:hover, select:hover, .button:hover {
+    animation: loading-button-animation 2s linear infinite;
+}
+
+@keyframes loading-button-animation {
+    from{
+        background-position: 0 0;
+    }
+    to {
+        background-position: 100px 0;
+    }
 }
 
 canvas {
@@ -11,5 +76,78 @@ canvas {
 }
 
 .biggerfont {
-    font-size: 20px;
+    font-size: 18px;
+    font-family: 'Merriweather', Georgia, Times; 
+    font-weight: 700;
 }
+
+.box {
+    width: 20%;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 35px;
+    border: 2px solid #fff;
+    border-radius: 20px/50px;
+    background-clip: padding-box;
+    text-align: center;
+  }
+  .button {
+    font-size: 1em;
+    padding: 10px;
+    color: #fff;
+    background: darkmagenta;
+    background-image: url(test.png);
+    border: solid 1px #555;
+    border-radius: 15%;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
+    visibility: visible;
+    opacity: 1;
+  }
+  .overlay:target {
+    visibility: hidden;
+    opacity: 0;
+    display:none
+  }
+  .popup {
+    margin: 70px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    width: 30%;
+    position: relative;
+    z-index: 1;
+    transition: all 5s ease-in-out;
+  }
+  .popup h2 {
+    margin-top: 0;
+    color: #333;
+    font-family: Tahoma, Arial, sans-serif;
+  }
+  .popup .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    transition: all 200ms;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+  }
+  .popup .close:hover {
+    color: darkviolet;
+  }
+  .popup .content {
+    max-height: 30%;
+    overflow: auto;
+  }

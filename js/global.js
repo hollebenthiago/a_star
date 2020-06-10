@@ -1,11 +1,13 @@
 
 // GLOBAL VARIABLES
-const rows      = 30;
+const rows      = 70;
 const cols      = 30;
-const w         = 700;
-const h         = 700;
+const w         = window.innerWidth - 50;
+const h         = 460;
 var start       = [0, 0];
 var end         = [rows-1, cols-1];
+var diagWeight  = Math.sqrt(2);
+var lineWeight  = 1;
 var drawGrid    = false;
 var changeStart = false;
 var buttons     = [];

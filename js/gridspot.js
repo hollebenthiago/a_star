@@ -11,7 +11,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
         
         let fillStyle;
         if ((start[0] == m && start[1] == n) || (end[0] == m && end[1] == n)) {
-            fillStyle = fill('blue');
+            fillStyle = fill(color(62, 14, 69));
             fillStyle;
             rect(this.i * w / rows, this.j * h / cols, 
                 w / rows, h / cols)
@@ -31,7 +31,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
             for (i = 0; i < checking.length; i ++) {
                 if (m == checking[i][0] && n == checking[i][1]) {
                     inChecking = true;
-                    fillStyle  = fill('green');
+                    fillStyle  = fill(color(255 - 2*this.h, 255 - 3*this.h, 255 - this.h));
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
                         w / rows, h / cols)
@@ -42,7 +42,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
             for (i = 0; i < checked.length; i ++) {
                 if (m == checked[i][0] && n == checked[i][1]) {
                     inChecked  = true;
-                    fillStyle  = fill('red');
+                    fillStyle  = fill(color(62, 14, 100));
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
                         w / rows, h / cols)
@@ -53,7 +53,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
             for (i = 0; i < path.length; i ++) {
                 if (m == path[i][0] && n == path[i][1]) {
                     inPath  = true;
-                    fillStyle  = fill('blue');
+                    fillStyle  = fill(color(62, 14, 69));
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
                         w / rows, h / cols)
