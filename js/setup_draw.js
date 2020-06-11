@@ -167,6 +167,10 @@ function addWalls(event) {
     if (drawGrid) {
         grid[toWall.i][toWall.j].wall = true;
     }
+    if (event.type == 'touchmove') {
+        console.log((event.clientX - rect.left) / (rect.right - rect.left) * w, 
+        (event.clientY - rect.top) / (rect.bottom - rect.top) * h)
+    }
     else if (eraseGrid) {
         grid[toWall.i][toWall.j].wall = false;
     }
