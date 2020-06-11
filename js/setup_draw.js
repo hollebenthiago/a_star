@@ -10,13 +10,20 @@ for (let i = 0; i < rows; i++) {
 function setup() {
 
     //defining draw walls button
-    var drawbtn = createButton('Walls');
+    var drawbtn = createButton('Draw walls');
     drawbtn.parent('buttonsHere')
+    
+    //defining erase walls button
+    var erasebtn = createButton('Erase walls');
+    erasebtn.parent('buttonsHere')
 
-    //defining change start/end button
-    var setstartbtn = createButton('End points');
+    //defining change start button
+    var setstartbtn = createButton('Change beginning');
     setstartbtn.parent('buttonsHere')
 
+    //defining change end button
+    var setendbtn = createButton('Change end');
+    setendbtn.parent('buttonsHere')
 
     //defining the start algorithm button
     var algbtn = createButton('Start');
@@ -29,7 +36,9 @@ function setup() {
         drawGrid = !drawGrid;
         if (drawGrid) {
             drawbtn.elt.style.border = 'solid 5px black'
+            eraseGrid   = false;
             changeStart = false;
+            changeEnd   = false;
             algorithm   = false;
             path        = [];
         } 
@@ -38,19 +47,53 @@ function setup() {
         }
     })
 
-    //adding click event for change start/end button    
+    //adding click event for erase walls button
+    erasebtn.mousePressed(() => {
+        eraseGrid = !eraseGrid;
+        if (eraseGrid) {
+            erasebtn.elt.style.border = 'solid 5px black'
+            drawGrid   = false;
+            changeStart = false;
+            changeEnd   = false;
+            algorithm   = false;
+            path        = [];
+        } 
+        else {
+            erasebtn.elt.style.border = 'solid 1px #555'
+        }
+    })
+
+    //adding click event for change start button    
     setstartbtn.mousePressed(() => {
         changeStart = !changeStart;
         if (changeStart) {
             setstartbtn.elt.style.border = 'solid 5px black'
-            drawGrid  = false;
-            algorithm = false;
-            path      = [];
+            drawGrid   = false;
+            eraseGrid  = false;
+            changeEnd  = false;
+            algorithm  = false;
+            path       = [];
         } 
         else {
             setstartbtn.elt.style.border = 'solid 1px #555'
         }
-    })   
+    })
+    
+    //adding click event for change end button    
+    setendbtn.mousePressed(() => {
+        changeEnd = !changeEnd;
+        if (changeEnd) {
+            setendbtn.elt.style.border = 'solid 5px black'
+            drawGrid   = false;
+            eraseGrid  = false;
+            changeStart  = false;
+            algorithm  = false;
+            path       = [];
+        } 
+        else {
+            setendbtn.elt.style.border = 'solid 1px #555'
+        }
+    })
 
     //adding click event for start algorithm button    
     algbtn.mousePressed(() => {
@@ -58,6 +101,8 @@ function setup() {
         if (algorithm) {
             algbtn.elt.style.border = 'solid 5px black'
             drawGrid    = false;
+            eraseGrid   = false;
+            changeEnd   = false;
             changeStart = false;
             checking.push(start);
         } 
@@ -102,10 +147,14 @@ function setup() {
     buttons.push(algbtn);
     buttons.push(topSel);
     buttons.push(lnSel);
+    buttons.push(erasebtn);
+    buttons.push(setendbtn);
 
-    //adding draw walls and set start/end events to canvas
+    //adding draw/erase walls and set start/end events to canvas
     document.getElementById('defaultCanvas0').addEventListener('mousemove', addWalls)
+    document.getElementById('defaultCanvas0').addEventListener('touchmove', addWalls)
     document.getElementById('defaultCanvas0').addEventListener('click', setStartEnd)    
+    document.getElementById('defaultCanvas0').addEventListener('touchstart', setStartEnd)    
 }
 
 //ADD WALLS EVENT/FUNCTION
@@ -115,10 +164,10 @@ function addWalls(event) {
                 y: (event.clientY - rect.top) / (rect.bottom - rect.top) * h
             };
     let toWall = getSpot(mousepos)
-    if (event.shiftKey && drawGrid) {
+    if (drawGrid) {
         grid[toWall.i][toWall.j].wall = true;
     }
-    else if (!event.shiftKey && event.ctrlKey && drawGrid) {
+    else if (eraseGrid) {
         grid[toWall.i][toWall.j].wall = false;
     }
 }
@@ -129,10 +178,10 @@ function setStartEnd(event) {
                 y: (event.clientY - rect.top) / (rect.bottom - rect.top) * h
             };
     let oneEnd = getSpot(clickpos)
-    if (event.shiftKey && changeStart) {
+    if (changeStart) {
         start = [oneEnd.i, oneEnd.j]
     }
-    else if (!event.shiftKey && event.ctrlKey && changeStart) {
+    else if (changeEnd) {
         end = [oneEnd.i, oneEnd.j]
     }
 }
@@ -162,8 +211,14 @@ function draw() {
     if (!drawGrid) {
         buttons[0].elt.style.border = 'solid 1px #555'
     }
+    if (!eraseGrid) {
+        buttons[5].elt.style.border = 'solid 1px #555'
+    }
     if (!changeStart) {
         buttons[1].elt.style.border = 'solid 1px #555'
+    }
+    if (!changeEnd) {
+        buttons[6].elt.style.border = 'solid 1px #555'
     }
     if (!algorithm) {
         buttons[2].elt.style.border = 'solid 1px #555'
