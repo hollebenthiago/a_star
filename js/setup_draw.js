@@ -29,8 +29,6 @@ function setup() {
     var algbtn = createButton('Start');
     algbtn.parent('buttonsHere')
 
-    
-
     //adding click event for draw walls button
     drawbtn.mousePressed(() => {
         drawGrid = !drawGrid;
@@ -111,6 +109,7 @@ function setup() {
         }
     })
 
+    
     //creating canvas
     var canvas = createCanvas(w, h);
     canvas.parent('canvasHere')
@@ -141,6 +140,28 @@ function setup() {
     lnSel.selected('No diagonals');
     lnSel.changed(changeLn);
 
+    //defining a wall randomizer
+    var randbtn = createButton('Generate walls');
+    randbtn.parent('buttonsHere')
+
+    //adding click event for start algorithm button    
+    randbtn.mousePressed(() => {
+        path = [];
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                grid[i][j].wall = false;
+            }
+        }
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                if (Math.random() < 0.3) {
+                    grid[i][j].wall = true
+                }
+                grid[i][j].draw(i, j)
+            }
+        }
+    })
+
     //adding buttons to list of buttons
     buttons.push(drawbtn);
     buttons.push(setstartbtn);
@@ -149,10 +170,11 @@ function setup() {
     buttons.push(lnSel);
     buttons.push(erasebtn);
     buttons.push(setendbtn);
+    buttons.push(randbtn);
 
     //adding draw/erase walls and set start/end events to canvas
     document.getElementById('defaultCanvas0').addEventListener('mousemove', addWalls)
-    document.getElementById('defaultCanvas0').addEventListener('touchmove', addWalls)
+    // document.getElementById('defaultCanvas0').addEventListener('touchstart', addWalls) needs some work
     document.getElementById('defaultCanvas0').addEventListener('click', setStartEnd)    
     document.getElementById('defaultCanvas0').addEventListener('touchstart', setStartEnd)    
 }
@@ -167,12 +189,13 @@ function addWalls(event) {
     if (drawGrid) {
         grid[toWall.i][toWall.j].wall = true;
     }
-    if (event.type == 'touchmove') {
-        alert(String(mousepos.x).concat(' ',String(mousepos.y)))
-    }
+    // if (event.type == 'touchmove') {
+    //     alert(String(mousepos.x).concat(' ',String(mousepos.y)))
+    // }
     else if (eraseGrid) {
         grid[toWall.i][toWall.j].wall = false;
     }
+    console.log(event);
 }
 
 function setStartEnd(event) {
