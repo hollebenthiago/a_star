@@ -20,37 +20,66 @@
         background: red;
     } */
 body {
-    font-family: 'Merriweather', Georgia, Times; 
-    font-weight: 700;
+  font-family: 'Merriweather', Georgia, Times; 
+  font-weight: 700;
+  background-image: url(../img/bg.png);
+}
+.topnav {
+  overflow: hidden;
+  background-color: darkslategrey;
+  border-radius: 5px;
+  width: 100%;
+  margin: 0px;
+  padding: 0;
+}
+.topnav a {
+  float: left;
+  text-align: center;
+  color: #f2f2f2;
+  padding: 25px 30px;
+  text-decoration: none;
+  font-size: 17px;
+}
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #1f2ea3;
+  color: white;
 }
 h1, h2, h3, h4, h5, h6, p, div, span, a, button, select, .popup, .button {
     font-family: 'Merriweather', Georgia, Times; 
     font-weight: 700;
+    color: darkslategray
 }
 
 h1 {
     text-align: center;
 }
-
+/* 
 canvas{
-    background-color: rgb(145, 121, 148);
+  background-color: rgb(145, 121, 148);
+} */
+canvas{
+  background-color: #d6d5e6;
 }
-
 button, select {
     cursor: pointer;
     width: 150px;
     height: 60px;
     position: relative;
-    display: inline-block;
-    color: #3e0e45;
+    color: darkslategrey;
     border-radius: 15%;
     margin-bottom: 15px;
+    margin-top: 15px;
     margin-left: 35px;
-    background-color: #3e0e45;
+    background-color: #ffffff;
 
-    background-image: url(test.png);
+    background-image: url(../img/test.png);
     border: solid 1px #555;
-    color: #ffffff;
+    color: darkslategray;
     transition: all ease 4s;
 }
 
@@ -77,16 +106,14 @@ canvas {
 
 .biggerfont {
     font-size: 18px;
-    font-family: 'Merriweather', Georgia, Times; 
+    font-family: 'Merriweather', 'Georgia', 'Times'; 
     font-weight: 700;
 }
 
 .box {
-    width: 20%;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.2);
+    float: left;
     padding: 35px;
-    border: 2px solid #fff;
     border-radius: 20px/50px;
     background-clip: padding-box;
     text-align: center;
@@ -94,9 +121,10 @@ canvas {
   .button {
     font-size: 1em;
     padding: 10px;
-    color: #fff;
-    background: darkmagenta;
-    background-image: url(test.png);
+    float: center;
+    color: darkslategray;
+    /* background: darkmagenta; */
+    background-image: url(../img/test.png);
     border: solid 1px #555;
     border-radius: 15%;
     text-decoration: none;
@@ -113,6 +141,7 @@ canvas {
     transition: opacity 500ms;
     visibility: visible;
     opacity: 1;
+    color: darkslategray
   }
   .overlay:target {
     visibility: hidden;
@@ -145,7 +174,7 @@ canvas {
     color: #333;
   }
   .popup .close:hover {
-    color: darkviolet;
+    color: darkslategray
   }
   .popup .content {
     max-height: 30%;

@@ -17,6 +17,7 @@ function setup() {
     var setstartbtn = createButton('End points');
     setstartbtn.parent('buttonsHere')
 
+
     //defining the start algorithm button
     var algbtn = createButton('Start');
     algbtn.parent('buttonsHere')
