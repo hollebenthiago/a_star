@@ -32,9 +32,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
             for (i = 0; i < checking.length; i ++) {
                 if (m == checking[i][0] && n == checking[i][1]) {
                     inChecking = true;
-                    // fillStyle  = fill(color(255 - 2*this.h, 255 - 3*this.h, 255 - this.h));
-                    fillStyle = fill(color(47, 250, 64, 255 - 2*(Math.abs(this.i - end[0]) + Math.abs(this.j - end[1]))));
-                    console.log((Math.abs(this.i - end[0]) + Math.abs(this.j - end[1])))
+                    fillStyle = fill(color(47, 250, 64, 255 - 2 * metric(topology, ln, [i, j], [end[0], end[1]])));
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
                         w / rows, h / cols)
@@ -45,7 +43,6 @@ function gridSpot(i, j, camefrom, topology, ln) {
             for (i = 0; i < checked.length; i ++) {
                 if (m == checked[i][0] && n == checked[i][1]) {
                     inChecked  = true;
-                    // fillStyle  = fill(color(62, 14, 100));
                     fillStyle = fill(color(250, 156, 67, 255 - 2*(Math.abs(this.i - end[0]) + Math.abs(this.j - end[1]))));
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
@@ -57,7 +54,6 @@ function gridSpot(i, j, camefrom, topology, ln) {
             for (i = 0; i < path.length; i ++) {
                 if (m == path[i][0] && n == path[i][1]) {
                     inPath  = true;
-                    // fillStyle  = fill(color(62, 14, 69));
                     fillStyle = fill(color(7, 237, 237))
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
@@ -66,14 +62,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
                     break;
                 }
             }
-            // if (!inChecking && !inChecked && !inPath) {
-            //     fillStyle = fill('white');
-            //     fillStyle;
-            // }
         }
-        // rect(this.i * w / rows, this.j * h / cols, 
-        //      w / rows - 1, h / cols - 1)
-        // fillStyle = undefined;
     }
     this.topology     = topology;
     this.addNeighbors = function (topology, ln, i, j) {

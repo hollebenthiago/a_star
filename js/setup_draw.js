@@ -173,29 +173,53 @@ function setup() {
     buttons.push(randbtn);
 
     //adding draw/erase walls and set start/end events to canvas
+    document.getElementById('defaultCanvas0').addEventListener('mousedown', checkMouseTouch)
+    document.getElementById('defaultCanvas0').addEventListener('mouseup', checkMouseTouch)
+    document.getElementById('defaultCanvas0').addEventListener('touchstart', checkMouseTouch)
+    document.getElementById('defaultCanvas0').addEventListener('touchend', checkMouseTouch)
     document.getElementById('defaultCanvas0').addEventListener('mousemove', addWalls)
+    document.getElementById('defaultCanvas0').addEventListener('touchmove', addWalls)
     // document.getElementById('defaultCanvas0').addEventListener('touchstart', addWalls) needs some work
     document.getElementById('defaultCanvas0').addEventListener('click', setStartEnd)    
     document.getElementById('defaultCanvas0').addEventListener('touchstart', setStartEnd)    
 }
 
 //ADD WALLS EVENT/FUNCTION
+function checkMouseTouch(event) {
+    if (event.type == 'mousedown') {
+        mouseDown = true;
+    }
+    else if (event.type == 'mouseup') {
+        mouseDown = false;
+    }
+    else if (event.type == 'touchstart') {
+        touching = true;
+    }
+    else if (event.type == 'touchend') {
+        touching = false;
+    }
+}
+
 function addWalls(event) {
     var rect = document.getElementById('defaultCanvas0').getBoundingClientRect();
-    mousepos = {x: (event.clientX - rect.left) / (rect.right - rect.left) * w,
-                y: (event.clientY - rect.top) / (rect.bottom - rect.top) * h
-            };
+    if (event.type == 'mousemove') {
+        mousepos = {x: (event.clientX - rect.left) / (rect.right - rect.left) * w,
+                    y: (event.clientY - rect.top) / (rect.bottom - rect.top) * h
+        }
+    }
+    else if (event.type == 'touchmove') {
+        mousepos = {x: (event.touches[0].clientX - rect.left) / (rect.right - rect.left) * w,
+                    y: (event.touches[0].clientY - rect.top) / (rect.bottom - rect.top) * h
+        }
+    }
+
     let toWall = getSpot(mousepos)
-    if (drawGrid) {
+    if (drawGrid && (mouseDown || touching)) {
         grid[toWall.i][toWall.j].wall = true;
     }
-    // if (event.type == 'touchmove') {
-    //     alert(String(mousepos.x).concat(' ',String(mousepos.y)))
-    // }
-    else if (eraseGrid) {
+    else if (eraseGrid && (mouseDown || touching)) {
         grid[toWall.i][toWall.j].wall = false;
     }
-    console.log(event);
 }
 
 function setStartEnd(event) {
