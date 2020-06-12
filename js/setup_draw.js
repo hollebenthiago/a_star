@@ -9,12 +9,20 @@ function setup() {
     var erasebtn = createButton('Erase walls');
     erasebtn.parent('buttonsHere')
 
+    //defining draw walls button
+    var dwaterbtn = createButton('Draw water');
+    dwaterbtn.parent('buttonsHere')
+    
+    //defining erase walls button
+    var ewaterbtn = createButton('Erase water');
+    ewaterbtn.parent('buttonsHere')
+
     //defining change start button
-    var setstartbtn = createButton('Change beginning');
+    var setstartbtn = createButton('Beginning');
     setstartbtn.parent('buttonsHere')
 
     //defining change end button
-    var setendbtn = createButton('Change end');
+    var setendbtn = createButton('End');
     setendbtn.parent('buttonsHere')
 
     //defining the start algorithm button
@@ -27,6 +35,8 @@ function setup() {
         if (drawGrid) {
             drawbtn.elt.style.border = 'solid 5px black'
             eraseGrid   = false;
+            dwaterGrid  = false;
+            ewaterGrid  = false;
             changeStart = false;
             changeEnd   = false;
             algorithm   = false;
@@ -42,7 +52,9 @@ function setup() {
         eraseGrid = !eraseGrid;
         if (eraseGrid) {
             erasebtn.elt.style.border = 'solid 5px black'
-            drawGrid   = false;
+            drawGrid    = false;
+            dwaterGrid  = false;
+            ewaterGrid  = false;
             changeStart = false;
             changeEnd   = false;
             algorithm   = false;
@@ -53,6 +65,42 @@ function setup() {
         }
     })
 
+    //adding click event for draw water button
+    dwaterbtn.mousePressed(() => {
+        dwaterGrid = !dwaterGrid;
+        if (dwaterGrid) {
+            dwaterbtn.elt.style.border = 'solid 5px black'
+            drawGrid    = false;
+            eraseGrid   = false;
+            ewaterGrid  = false;
+            changeStart = false;
+            changeEnd   = false;
+            algorithm   = false;
+            path        = [];
+        } 
+        else {
+            dwaterbtn.elt.style.border = 'solid 1px #555'
+        }
+    })
+
+    //adding click event for erase water button
+    ewaterbtn.mousePressed(() => {
+        ewaterGrid = !ewaterGrid;
+        if (ewaterGrid) {
+            ewaterbtn.elt.style.border = 'solid 5px black'
+            drawGrid    = false;
+            eraseGrid   = false;
+            dwaterGrid  = false;
+            changeStart = false;
+            changeEnd   = false;
+            algorithm   = false;
+            path        = [];
+        } 
+        else {
+            ewaterbtn.elt.style.border = 'solid 1px #555'
+        }
+    })
+
     //adding click event for change start button    
     setstartbtn.mousePressed(() => {
         changeStart = !changeStart;
@@ -60,6 +108,8 @@ function setup() {
             setstartbtn.elt.style.border = 'solid 5px black'
             drawGrid   = false;
             eraseGrid  = false;
+            dwaterGrid = false;
+            ewaterGrid = false;
             changeEnd  = false;
             algorithm  = false;
             path       = [];
@@ -74,11 +124,13 @@ function setup() {
         changeEnd = !changeEnd;
         if (changeEnd) {
             setendbtn.elt.style.border = 'solid 5px black'
-            drawGrid   = false;
-            eraseGrid  = false;
-            changeStart  = false;
-            algorithm  = false;
-            path       = [];
+            drawGrid    = false;
+            eraseGrid   = false;
+            dwaterGrid  = false;
+            ewaterGrid  = false;
+            changeStart = false;
+            algorithm   = false;
+            path        = [];
         } 
         else {
             setendbtn.elt.style.border = 'solid 1px #555'
@@ -92,6 +144,8 @@ function setup() {
             algbtn.elt.style.border = 'solid 5px black'
             drawGrid    = false;
             eraseGrid   = false;
+            dwaterGrid  = false;
+            ewaterGrid  = false;
             changeEnd   = false;
             changeStart = false;
             checking.push(start);
@@ -162,6 +216,8 @@ function setup() {
     buttons.push(lnSel);
     buttons.push(erasebtn);
     buttons.push(setendbtn);
+    buttons.push(dwaterbtn);
+    buttons.push(ewaterbtn);
     buttons.push(randbtn);
 
     //adding draw/erase walls and set start/end events to canvas
@@ -184,6 +240,12 @@ function draw() {
     }
     if (!eraseGrid) {
         buttons[5].elt.style.border = 'solid 1px #555'
+    }
+    if (!dwaterGrid) {
+        buttons[7].elt.style.border = 'solid 1px #555'
+    }
+    if (!ewaterGrid) {
+        buttons[8].elt.style.border = 'solid 1px #555'
     }
     if (!changeStart) {
         buttons[1].elt.style.border = 'solid 1px #555'
@@ -217,9 +279,9 @@ function draw() {
             if (current[0] == end[0] && current[1] == end[1]) {
                 path = [end];
                 counter = current;
-                let c = 0;
+                // let c = 0;
                 while (grid[counter[0]][counter[1]].camefrom) {
-                    c ++;
+                    // c ++;
                     let new_i = grid[counter[0]][counter[1]].camefrom.i;
                     let new_j = grid[counter[0]][counter[1]].camefrom.j;
                     counter = [new_i, new_j]
@@ -257,10 +319,10 @@ function draw() {
                 }
                 if (!isChecked) {
                     if (currentGridSpot.i != currentNeighbor.i && currentGridSpot.j != currentNeighbor.j) {
-                        var tempG = currentGridSpot.g + diagWeight;
+                        var tempG = currentGridSpot.g + currentNeighbor.weight + diagWeight;
                     }
                     else {
-                        var tempG = currentGridSpot.g + lineWeight;
+                        var tempG = currentGridSpot.g + currentNeighbor.weight + lineWeight;
                     }
                     let better = false;
                     if (isChecking) {

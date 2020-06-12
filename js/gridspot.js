@@ -5,6 +5,7 @@ function gridSpot(i, j, camefrom, topology, ln) {
     this.g        = 0;
     this.h        = 0;
     this.wall     = false;
+    this.weight   = 0;
     this.camefrom = camefrom;
     this.ln       = ln;
     this.draw = function(m, n) {
@@ -12,7 +13,8 @@ function gridSpot(i, j, camefrom, topology, ln) {
         let fillStyle;
         if ((start[0] == m && start[1] == n) || (end[0] == m && end[1] == n)) {
             // fillStyle = fill(color(62, 14, 69));
-            fillStyle = fill(color(7, 237, 237))
+            // fillStyle = fill(color(7, 237, 237))
+            fillStyle = fill(color(252, 140, 3));
             fillStyle;
             rect(this.i * w / rows, this.j * h / cols, 
                 w / rows, h / cols)
@@ -25,7 +27,14 @@ function gridSpot(i, j, camefrom, topology, ln) {
                 w / rows, h / cols)
             fillStyle = undefined;
         }
-        else {
+        // else if (this.weight > 0) {
+        //     fillStyle = fill(color(84, 129, 255))
+        //     fillStyle;
+        //     rect(this.i * w / rows, this.j * h / cols, 
+        //         w / rows, h / cols)
+        //     fillStyle = undefined;
+        // }
+        else{
             var inChecking = false;
             var inChecked  = false;
             var inPath     = false;
@@ -54,13 +63,26 @@ function gridSpot(i, j, camefrom, topology, ln) {
             for (i = 0; i < path.length; i ++) {
                 if (m == path[i][0] && n == path[i][1]) {
                     inPath  = true;
-                    fillStyle = fill(color(7, 237, 237))
+                    if (this.weight > 0) {
+                        fillstyle = fill(color(168,135,129));
+                    }
+                    else {
+                        fillStyle = fill(color(252, 140, 3));
+                    }
                     fillStyle;
                     rect(this.i * w / rows, this.j * h / cols, 
                         w / rows, h / cols)
                     fillStyle = undefined;
                     break;
                 }
+            
+            }
+            if (this.weight > 0 && !inPath ) {
+                fillStyle = fill(color(84, 129, 255))
+                fillStyle;
+                rect(this.i * w / rows, this.j * h / cols, 
+                    w / rows, h / cols)
+                fillStyle = undefined;
             }
         }
     }

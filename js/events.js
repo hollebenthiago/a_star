@@ -35,6 +35,12 @@ function addWalls(event) {
     else if (eraseGrid && (mouseDown || touching)) {
         grid[toWall.i][toWall.j].wall = false;
     }
+    else if (dwaterGrid && (mouseDown || touching)) {
+        grid[toWall.i][toWall.j].weight = 4;
+    }
+    else if (ewaterGrid && (mouseDown || touching)) {
+        grid[toWall.i][toWall.j].weight = 0;
+    }
 }
 
 function setStartEnd(event) {

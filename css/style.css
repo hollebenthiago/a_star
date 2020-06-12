@@ -44,7 +44,7 @@ canvas{
 }
 button, select {
     cursor: pointer;
-    width: 150px;
+    width: 130px;
     height: 60px;
     position: relative;
     color: darkslategrey;
