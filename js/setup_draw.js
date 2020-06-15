@@ -187,7 +187,7 @@ function setup() {
     lnSel.changed(changeLn);
 
     //defining a wall randomizer
-    var randbtn = createButton('Generate walls');
+    var randbtn = createButton('Walls');
     randbtn.parent('buttonsHere')
 
     //adding click event for start algorithm button    
@@ -222,7 +222,7 @@ function setup() {
 
     //adding draw/erase walls and set start/end events to canvas
     document.getElementById('defaultCanvas0').addEventListener('mousedown', checkMouseTouch)
-    document.getElementById('defaultCanvas0').addEventListener('mouseup', checkMouseTouch)
+    document.addEventListener('mouseup', checkMouseTouch)
     document.getElementById('defaultCanvas0').addEventListener('touchstart', checkMouseTouch)
     document.getElementById('defaultCanvas0').addEventListener('touchend', checkMouseTouch)
     document.getElementById('defaultCanvas0').addEventListener('mousemove', addWalls)
@@ -233,7 +233,6 @@ function setup() {
 
 //LOOP
 function draw() {
-    // code
     clear()
     if (!drawGrid) {
         buttons[0].elt.style.border = 'solid 1px #555'
@@ -268,7 +267,6 @@ function draw() {
         grid[end[0]][end[1]].wall = false;
         grid[start[0]][start[1]].wall = false;
         if (checking.length > 0) {
-            //still needs to check something
             var winner = 0;
             for (var i = 0; i < checking.length; i++) {
                 if (grid[checking[i][0]][checking[i][1]].f <= grid[checking[winner][0]][checking[winner][1]].f) {
@@ -279,9 +277,7 @@ function draw() {
             if (current[0] == end[0] && current[1] == end[1]) {
                 path = [end];
                 counter = current;
-                // let c = 0;
                 while (grid[counter[0]][counter[1]].camefrom) {
-                    // c ++;
                     let new_i = grid[counter[0]][counter[1]].camefrom.i;
                     let new_j = grid[counter[0]][counter[1]].camefrom.j;
                     counter = [new_i, new_j]
@@ -336,16 +332,13 @@ function draw() {
                         checking.push([currentNeighbor.i, currentNeighbor.j])
                         better = true;
                     }
-
                     if (better) {
                         currentNeighbor.h = metric(topology, ln, [currentNeighbor.i, currentNeighbor.j], end)
                         currentNeighbor.f = currentNeighbor.h + currentNeighbor.g;
                         currentNeighbor.camefrom = currentGridSpot;
                     }
                 }
-
             } 
-
         }
         else {
             //no solution found
@@ -353,5 +346,18 @@ function draw() {
             algorithm = !algorithm
         }
     }
-    
+}
+
+function windowResized() {
+    w = windowWidth - 50
+    h = 2 * windowHeight/3
+    resizeCanvas(w, h);
+    let btns = document.getElementsByTagName('button')
+    // for (let i = 0; i < buttons.length; i++) {
+    //     btns[i].style.width = String((windowHeight - 50)/15).concat('px');
+    //     btns[i].style.fontSize = String((windowHeight - 50)/90).concat('px');        
+    // }
+    // for (let i = 0; i < selects.length; i++) {
+    //     document.getElementsByTagName('select')[i].style.width = String((windowHeight - 50)).concat('px');
+    // }
 }

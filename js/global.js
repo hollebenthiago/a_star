@@ -2,8 +2,8 @@
 // GLOBAL VARIABLES
 const rows      = 70;
 const cols      = 30;
-const w         = window.innerWidth - 50;
-const h         = 2*window.innerHeight/3;
+let w           = window.innerWidth - 50;
+let h           = 2 * window.innerHeight/3;
 let start       = [0, 0];
 let end         = [rows-1, cols-1];
 let diagWeight  = 1;
